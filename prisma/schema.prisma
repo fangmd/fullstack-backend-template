@@ -6,22 +6,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
-}
+/// 管理后台用户表
+model AdminUser {
+  id         BigInt   @id
+  name       String   @unique
+  password   String
+  isDel      Boolean  @default(false) @map(name: "is_del")
+  createTime DateTime @default(now()) @map(name: "create_time")
+  updateTime DateTime @updatedAt @map(name: "update_time")
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  @@map(name: "admin_user")
 }

@@ -30,6 +30,9 @@ export class AllExceptionFilter implements ExceptionFilter<HttpException> {
       status = exception.getResponse()['code'];
       msg = exception.getResponse()['msg'];
     }
+
+    console.log(exception);
+
     // 发送响应
     response.status(HttpStatus.OK).json({
       code: status,

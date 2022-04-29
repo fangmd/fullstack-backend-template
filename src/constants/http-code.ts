@@ -4,6 +4,9 @@
 
 export const SUCCESS_CODE = 200;
 
+/** 业务错误，通用code */
+export const BIZ_ERROR_CODE = 20000;
+
 export const SERVER_ERROR = {
   code: -1,
   msg: '服务错误',

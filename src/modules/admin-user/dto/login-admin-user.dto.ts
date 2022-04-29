@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Length } from 'class-validator';
 
 /**
- * 创建管理后台用户
+ * 登录管理后台用户
  */
-export class CreateAdminUserDto {
+export class LoginAdminUserDto {
   /** 用户姓名 */
   @ApiProperty({ description: '用户姓名' })
   @Length(2, 50)

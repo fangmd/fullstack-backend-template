@@ -3,6 +3,7 @@ import { AdminUserService } from './admin-user.service';
 import { AdminUserController } from './admin-user.controller';
 
 @Module({
+  imports: [],
   controllers: [AdminUserController],
   providers: [AdminUserService],
 })
