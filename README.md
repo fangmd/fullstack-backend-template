@@ -8,4 +8,4 @@ nestjs 项目模版
 - [x] debug NestJS using vscode (f5)
 - [ ] config manage
 - [x] Prisma mysql
-- [ ] jwt
+- [x] jwt

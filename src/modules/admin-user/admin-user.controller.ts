@@ -1,5 +1,13 @@
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
+import { ApiBody, ApiHeaders, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/guard/jwt/jwt_auth.guard';
 import { responseSuccess } from 'src/utils/response';
 import { AdminUserService } from './admin-user.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
@@ -30,5 +38,16 @@ export class AdminUserController {
     return responseSuccess({
       url: result,
     });
+  }
+
+  /**
+   * 测试 jwt
+   */
+  @ApiOperation({ summary: '获取用户信息， 测试jwt' })
+  @ApiHeaders([{ name: 'auth' }])
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getUserInfo() {
+    return responseSuccess();
   }
 }

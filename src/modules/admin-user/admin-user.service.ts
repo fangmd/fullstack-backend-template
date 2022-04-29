@@ -8,10 +8,14 @@ import { UpdateAdminUserDto } from './dto/update-admin-user.dto';
 import { PWD_IS_ERROR, USER_NAME_EXISTS, USER_NOT_EXISTS } from './http-code';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import MD5Utils from 'src/utils/md5';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class AdminUserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private authService: AuthService,
+  ) {}
 
   /**
    * 创建管理后台用户
@@ -58,7 +62,13 @@ export class AdminUserService {
       throw new BizException(PWD_IS_ERROR);
     }
 
-    return { id: dbUser.id, name: dbUser.name };
+    // gen token
+    const token = this.authService.certificate({
+      name: dbUser.name,
+      id: dbUser.id,
+    });
+
+    return { id: dbUser.id, name: dbUser.name, token: token };
   }
 
   findAll(params: {
