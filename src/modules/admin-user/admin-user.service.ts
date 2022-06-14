@@ -1,4 +1,3 @@
-import { BaseListDto } from './../../dto/base-list-dto';
 import { getSnowId } from './../../utils/snowid';
 import { Injectable } from '@nestjs/common';
 import { BizException } from 'src/utils/BizException';
@@ -9,7 +8,7 @@ import { PWD_IS_ERROR, USER_NAME_EXISTS, USER_NOT_EXISTS } from './http-code';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import MD5Utils from 'src/utils/md5';
 import { AuthService } from '../auth/auth.service';
-import { bigIntLiteral } from '@babel/types';
+import { QueryAdminUserDto } from './dto/query-admin-user.dto';
 
 @Injectable()
 export class AdminUserService {
@@ -92,18 +91,21 @@ export class AdminUserService {
     return { id: dbUser.id, name: dbUser.name, token: token };
   }
 
-  async findAll(params: BaseListDto) {
-    const { page = 0, size = 20 } = params;
+  async findAll(params: QueryAdminUserDto) {
+    const { page = 1, size = 20 } = params;
     const total = await this.prisma.adminUser.count({
       where: {
         isDel: false,
       },
     });
     const ret = await this.prisma.adminUser.findMany({
-      skip: page * size,
+      skip: (page - 1) * size,
       take: size,
       where: {
         isDel: false,
+        name: {
+          contains: params.name,
+        },
       },
       orderBy: {
         updateTime: 'desc',

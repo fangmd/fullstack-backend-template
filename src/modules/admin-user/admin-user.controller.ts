@@ -16,6 +16,7 @@ import { responseSuccess } from 'src/utils/response';
 import { AdminUserService } from './admin-user.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
+import { QueryAdminUserDto } from './dto/query-admin-user.dto';
 import { UpdateAdminUserDto } from './dto/update-admin-user.dto';
 
 @ApiTags('管理后台用户相关 admin-user')
@@ -38,7 +39,7 @@ export class AdminUserController {
   @ApiHeaders([{ name: 'auth' }])
   @UseGuards(JwtAuthGuard)
   @Get('list')
-  async list(@Query() listDto: BaseListDto) {
+  async list(@Query() listDto: QueryAdminUserDto) {
     const result = await this.adminUserService.findAll(listDto);
     return responseSuccess({
       ...result,
