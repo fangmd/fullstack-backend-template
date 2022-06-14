@@ -1,6 +1,6 @@
+import { BaseListDto } from './../../dto/base-list-dto';
 import { getSnowId } from './../../utils/snowid';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { BizException } from 'src/utils/BizException';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAdminUserDto } from './dto/create-admin-user.dto';
@@ -9,6 +9,7 @@ import { PWD_IS_ERROR, USER_NAME_EXISTS, USER_NOT_EXISTS } from './http-code';
 import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import MD5Utils from 'src/utils/md5';
 import { AuthService } from '../auth/auth.service';
+import { bigIntLiteral } from '@babel/types';
 
 @Injectable()
 export class AdminUserService {
@@ -43,6 +44,26 @@ export class AdminUserService {
     return { id: newUser.id, name: newUser.name };
   }
 
+  async update(editAdminUserDto: UpdateAdminUserDto) {
+    const { id, password, ...updateData } = editAdminUserDto;
+
+    if (password) {
+      updateData['password'] = password;
+    }
+
+    const ret = await this.prisma.adminUser.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name: updateData.name,
+        password: editAdminUserDto.password,
+      },
+    });
+    console.log(ret);
+    return ret;
+  }
+
   /**
    * 登录
    */
@@ -71,31 +92,38 @@ export class AdminUserService {
     return { id: dbUser.id, name: dbUser.name, token: token };
   }
 
-  findAll(params: {
-    // skip?: number;
-    // take?: number;
-    // cursor?: Prisma.UserWhereUniqueInput;
-    // where?: Prisma.UserWhereInput;
-    // orderBy?: Prisma.UserOrderByWithRelationInput;
-  }) {
-    // const { skip, take, cursor, where, orderBy } = params;
-    // const ret = this.prisma.adminUser.findMany({
-    //   skip,
-    //   take,
-    //   cursor,
-    //   where,
-    //   orderBy,
-    // });
-    // console.log(ret);
-    // return ret;
+  async findAll(params: BaseListDto) {
+    const { page = 0, size = 20 } = params;
+    const total = await this.prisma.adminUser.count({
+      where: {
+        isDel: false,
+      },
+    });
+    const ret = await this.prisma.adminUser.findMany({
+      skip: page * size,
+      take: size,
+      where: {
+        isDel: false,
+      },
+      orderBy: {
+        updateTime: 'desc',
+      },
+      select: {
+        id: true,
+        name: true,
+        createTime: true,
+        updateTime: true,
+      },
+    });
+    console.log('ret', ret);
+    return {
+      list: ret,
+      total,
+    };
   }
 
   findOne(id: number) {
     return `This action returns a #${id} adminUser`;
-  }
-
-  update(id: number, updateAdminUserDto: UpdateAdminUserDto) {
-    return `This action updates a #${id} adminUser`;
   }
 
   remove(id: number) {

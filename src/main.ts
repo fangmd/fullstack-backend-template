@@ -5,6 +5,7 @@ import { ParamsValidationPipe } from './pipes/ParamsValidationPipe';
 import { Logger } from 'nestjs-pino';
 import { PrismaService } from './modules/prisma/prisma.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -15,6 +16,16 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ParamsValidationPipe()); // 参数错误，直接报错
   app.useGlobalFilters(new AllExceptionFilter()); // 全局错误捕获
+
+  // 处理 query 参数都是 string 类型的问题
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
