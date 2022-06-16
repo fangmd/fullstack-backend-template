@@ -10,7 +10,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiHeaders, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { BaseListDto } from 'src/dto/base-list-dto';
 import { JwtAuthGuard } from 'src/guard/jwt/jwt_auth.guard';
 import { responseSuccess } from 'src/utils/response';
 import { AdminUserService } from './admin-user.service';
@@ -76,10 +75,9 @@ export class AdminUserController {
   @UseGuards(JwtAuthGuard)
   @Put()
   async edit(@Body() editAdminUserDto: UpdateAdminUserDto) {
-    const result = await this.adminUserService.update(editAdminUserDto);
-    return responseSuccess({
-      url: result,
-    });
+    console.log('edit');
+    await this.adminUserService.update(editAdminUserDto);
+    return responseSuccess();
   }
 
   /**

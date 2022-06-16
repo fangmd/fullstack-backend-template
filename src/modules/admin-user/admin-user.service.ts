@@ -59,7 +59,7 @@ export class AdminUserService {
         password: editAdminUserDto.password,
       },
     });
-    console.log(ret);
+    // console.log(ret);
     return ret;
   }
 
