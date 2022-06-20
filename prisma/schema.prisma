@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider        = "mysql"
-  url             = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 /// 管理后台用户表
@@ -20,4 +20,36 @@ model AdminUser {
   updateTime DateTime @updatedAt @map(name: "update_time")
 
   @@map(name: "admin_user")
+}
+
+/// 管理后台角色表
+model AdminRole {
+  id         BigInt   @id
+  name       String   @unique
+  permission String?  @db.VarChar(10000)
+  isDel      Boolean  @default(false) @map(name: "is_del")
+  createTime DateTime @default(now()) @map(name: "create_time")
+  updateTime DateTime @updatedAt @map(name: "update_time")
+
+  @@map(name: "admin_role")
+}
+
+/// 管理后台权限/菜单表
+model AdminPermission {
+  id            BigInt  @id
+  parentId      BigInt?
+  name          String  @unique
+  icon          String?
+  componentPath String?
+  urlPath       String?
+  roleType      Int     @default(1)
+  enable        Boolean @default(false)
+  menuVisible   Boolean @default(true)
+  index         Int     @default(0)
+
+  isDel      Boolean  @default(false) @map(name: "is_del")
+  createTime DateTime @default(now()) @map(name: "create_time")
+  updateTime DateTime @updatedAt @map(name: "update_time")
+
+  @@map(name: "admin_permission")
 }
