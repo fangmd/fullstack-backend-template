@@ -2,35 +2,40 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 /// 管理后台用户表
 model AdminUser {
-  id         BigInt   @id
-  name       String   @unique
+  id         BigInt     @id
+  roleId     BigInt?
+  role       AdminRole? @relation(fields: [roleId], references: [id])
+  name       String     @unique
   password   String
-  isDel      Boolean  @default(false) @map(name: "is_del")
-  createTime DateTime @default(now()) @map(name: "create_time")
-  updateTime DateTime @updatedAt @map(name: "update_time")
+  isDel      Boolean    @default(false) @map(name: "is_del")
+  createTime DateTime   @default(now()) @map(name: "create_time")
+  updateTime DateTime   @updatedAt @map(name: "update_time")
 
   @@map(name: "admin_user")
 }
 
 /// 管理后台角色表
 model AdminRole {
-  id         BigInt   @id
-  name       String   @unique
-  permission String?  @db.VarChar(10000)
-  isDel      Boolean  @default(false) @map(name: "is_del")
-  createTime DateTime @default(now()) @map(name: "create_time")
-  updateTime DateTime @updatedAt @map(name: "update_time")
+  id            BigInt   @id
+  name          String   @unique
+  permissionIds    String?  @db.VarChar(10000)
+  isDel         Boolean  @default(false) @map(name: "is_del")
+  createTime    DateTime @default(now()) @map(name: "create_time")
+  updateTime    DateTime @updatedAt @map(name: "update_time")
 
+  AdminUser AdminUser[]
   @@map(name: "admin_role")
 }
 

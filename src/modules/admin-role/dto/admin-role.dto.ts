@@ -10,8 +10,8 @@ export class CreateAdminRoleDto {
   @ApiProperty({ description: '角色名称' })
   @Length(2, 50)
   readonly name: string;
-  @ApiProperty({ description: '角色权限' })
-  readonly permission?: string;
+  @ApiProperty({ description: '角色权限JSON' })
+  readonly permissionIds?: string;
 }
 
 /**
@@ -31,6 +31,6 @@ export class UpdateAdminRoleDto {
   readonly id: bigint;
   @ApiProperty({ description: '角色名称' })
   readonly name: string;
-  @ApiProperty({ description: '角色权限' })
-  readonly permission: string;
+  @ApiProperty({ description: '角色权限JSON' })
+  readonly permissionIds: string;
 }

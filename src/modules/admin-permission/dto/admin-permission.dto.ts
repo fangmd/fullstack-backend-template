@@ -32,6 +32,8 @@ export class CreateAdminPermissionDto {
   readonly enable?: boolean;
   @ApiProperty({ description: '菜单是否显示' })
   readonly menuVisible?: boolean;
+  @ApiProperty({ description: '排序' })
+  readonly index?: number;
 }
 
 /**

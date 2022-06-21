@@ -7,7 +7,7 @@ import {
   QueryAdminRoleDto,
   UpdateAdminRoleDto,
 } from './dto/admin-role.dto';
-import { ROLE_NAME_EXISTS } from './http-code';
+import { ROLE_NAME_EXISTS, ROLE_NOT_EXISTS } from './http-code';
 
 @Injectable()
 export class AdminRoleService {
@@ -32,7 +32,7 @@ export class AdminRoleService {
       data: {
         id: getSnowId(),
         name: createAdminRoleDto.name,
-        permission: createAdminRoleDto.permission,
+        permissionIds: createAdminRoleDto.permissionIds,
       },
     });
 
@@ -51,7 +51,7 @@ export class AdminRoleService {
       },
       data: {
         name: updateData.name,
-        permission: updateData.permission,
+        permissionIds: updateData.permissionIds,
       },
     });
     return ret;
@@ -82,14 +82,62 @@ export class AdminRoleService {
       select: {
         id: true,
         name: true,
-        permission: true,
+        permissionIds: true,
         createTime: true,
         updateTime: true,
       },
     });
+
+    // 所有权限id
+    const allPermissionIds = ret.reduce((preValue, curValue, value) => {
+      const newP = curValue.permissionIds
+        ? JSON.parse(curValue.permissionIds)
+        : [];
+      return preValue.concat(newP);
+    }, []);
+
+    // 查所有会用到的权限
+    const allPermission = await this.prisma.adminPermission.findMany({
+      where: {
+        id: {
+          in: allPermissionIds.map((i) => BigInt(i)),
+        },
+      },
+    });
+
+    // console.log('ret', ret);
+
+    ret.forEach((i) => {
+      if (!i.permissionIds) return '';
+
+      i['permissionNames'] = allPermission
+        .filter((i2) => {
+          return i.permissionIds.includes(i2.id.toString());
+        })
+        .reduce((preValue, curValue) => {
+          if (!preValue) {
+            return curValue.name;
+          }
+          return `${preValue},${curValue.name}`;
+        }, '');
+    });
+    // console.log('ret', ret);
+
     return {
       list: ret,
       total,
     };
+  }
+
+  async findOne(id: bigint) {
+    const ret = this.prisma.adminRole.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!ret) {
+      throw new BizException(ROLE_NOT_EXISTS);
+    }
+    return ret;
   }
 }

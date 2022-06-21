@@ -1,3 +1,4 @@
+import { AdminRoleService } from './../admin-role/admin-role.service';
 import { getSnowId } from './../../utils/snowid';
 import { Injectable } from '@nestjs/common';
 import { BizException } from 'src/utils/BizException';
@@ -9,12 +10,14 @@ import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import MD5Utils from 'src/utils/md5';
 import { AuthService } from '../auth/auth.service';
 import { QueryAdminUserDto } from './dto/query-admin-user.dto';
+import { IDDto } from 'src/dto/id-dto';
 
 @Injectable()
 export class AdminUserService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
+    private adminRoleService: AdminRoleService,
   ) {}
 
   /**
@@ -55,6 +58,7 @@ export class AdminUserService {
         id: id,
       },
       data: {
+        roleId: updateData.roleId,
         name: updateData.name,
         password: editAdminUserDto.password,
       },
@@ -113,22 +117,51 @@ export class AdminUserService {
       select: {
         id: true,
         name: true,
+        roleId: true,
         createTime: true,
         updateTime: true,
+        role: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
-    console.log('ret', ret);
+    ret.forEach((i) => {
+      i['roleName'] = i.role.name;
+      delete i.role;
+    });
+    // console.log('ret', ret);
     return {
       list: ret,
       total,
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} adminUser`;
+  async findOne(id: bigint) {
+    const ret = this.prisma.adminUser.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!ret) {
+      throw new BizException(USER_NOT_EXISTS);
+    }
+    return ret;
   }
 
   remove(id: number) {
     return `This action removes a #${id} adminUser`;
+  }
+
+  /**
+   * 获取用户权限
+   */
+  async getUserPermissions(idDto: IDDto) {
+    const user = await this.findOne(idDto.id);
+
+    const adminRole = await this.adminRoleService.findOne(user.roleId);
+
+    return adminRole;
   }
 }

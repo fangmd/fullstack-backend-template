@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { Length } from 'class-validator';
 
 /**
@@ -9,6 +10,9 @@ export class CreateAdminUserDto {
   @ApiProperty({ description: '用户姓名' })
   @Length(2, 50)
   readonly name: string;
+  @ApiProperty({ description: '角色id' })
+  @Transform((val) => BigInt(val.value))
+  readonly roleId: bigint;
   /** 用户密码 */
   @ApiProperty({ description: '用户密码' })
   @Length(8, 50)

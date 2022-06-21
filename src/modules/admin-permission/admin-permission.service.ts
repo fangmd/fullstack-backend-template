@@ -1,3 +1,4 @@
+import { ROLE_NOT_EXISTS } from './../admin-role/http-code';
 import { Injectable } from '@nestjs/common';
 import { DeleteDto } from 'src/dto/delete-dto';
 import { BizException } from 'src/utils/BizException';
@@ -40,6 +41,7 @@ export class AdminPermissionService {
         roleType: createAdminPermissionDto.roleType,
         enable: createAdminPermissionDto.enable,
         menuVisible: createAdminPermissionDto.menuVisible,
+        index: createAdminPermissionDto.index,
       },
     });
 
@@ -78,6 +80,7 @@ export class AdminPermissionService {
         roleType: editAdminPermissionDto.roleType,
         enable: editAdminPermissionDto.enable,
         menuVisible: editAdminPermissionDto.menuVisible,
+        index: editAdminPermissionDto.index,
       },
     });
     return ret;
@@ -100,7 +103,7 @@ export class AdminPermissionService {
         },
       },
       orderBy: {
-        index: 'desc',
+        index: 'asc',
       },
     });
     const nodeArr = ret.filter((i) => i.parentId === null);

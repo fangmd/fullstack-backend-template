@@ -6,6 +6,9 @@ export class UpdateAdminUserDto {
   @ApiProperty({ description: '用户id' })
   @Transform((val) => BigInt(val.value))
   readonly id: bigint;
+  @ApiProperty({ description: '角色id' })
+  @Transform((val) => BigInt(val.value))
+  readonly roleId: bigint;
   /** 用户姓名 */
   @ApiProperty({ description: '用户姓名' })
   readonly name: string;
