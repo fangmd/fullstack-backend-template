@@ -11,7 +11,6 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiBody, ApiHeaders, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IDDto } from 'src/dto/id-dto';
 import { JwtAuthGuard } from 'src/guard/jwt/jwt_auth.guard';
 import { responseSuccess } from 'src/utils/response';
 import { AdminUserService } from './admin-user.service';
