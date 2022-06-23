@@ -102,8 +102,6 @@ export class AdminUserController {
   @Get('permission')
   async userPermission(@Request() req: any) {
     const result = await this.adminUserService.getUserPermissions(req.user.id);
-    return responseSuccess({
-      ...result,
-    });
+    return responseSuccess(result);
   }
 }
