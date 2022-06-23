@@ -89,7 +89,7 @@ export class AdminPermissionService {
   /**
    * 管理后台菜单不做分页
    */
-  async findAll(params: QueryAdminPermissionDto) {
+  async findAll() {
     const total = await this.prisma.adminPermission.count({
       where: {
         isDel: false,
@@ -98,9 +98,6 @@ export class AdminPermissionService {
     const ret = await this.prisma.adminPermission.findMany({
       where: {
         isDel: false,
-        name: {
-          contains: params.name,
-        },
       },
       orderBy: {
         index: 'asc',

@@ -7,7 +7,6 @@ import {
   HttpCode,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiHeaders, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,7 +14,6 @@ import { JwtAuthGuard } from 'src/guard/jwt/jwt_auth.guard';
 import { responseSuccess } from 'src/utils/response';
 import { AdminPermissionService } from './admin-permission.service';
 import {
-  QueryAdminPermissionDto,
   CreateAdminPermissionDto,
   UpdateAdminPermissionDto,
 } from './dto/admin-Permission.dto';
@@ -31,8 +29,8 @@ export class AdminPermissionController {
 
   @ApiOperation({ summary: '获取权限/菜单列表' })
   @Get('list')
-  async list(@Query() listDto: QueryAdminPermissionDto) {
-    const result = await this.adminPermissionService.findAll(listDto);
+  async list() {
+    const result = await this.adminPermissionService.findAll();
     return responseSuccess({
       ...result,
     });

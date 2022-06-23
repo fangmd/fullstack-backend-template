@@ -8,6 +8,7 @@ import {
   Delete,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { ApiBody, ApiHeaders, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IDDto } from 'src/dto/id-dto';
@@ -96,11 +97,13 @@ export class AdminUserController {
    * 获取用户所有权限
    */
   @ApiOperation({ summary: '获取用户所有权限/菜单' })
+  @ApiHeaders([{ name: 'auth' }])
+  @UseGuards(JwtAuthGuard)
   @Get('permission')
-  async userPermission(@Query() idDto: IDDto) {
-    const result = await this.adminUserService.getUserPermissions(idDto);
+  async userPermission(@Request() req: any) {
+    const result = await this.adminUserService.getUserPermissions(req.user.id);
     return responseSuccess({
-      url: result,
+      ...result,
     });
   }
 }

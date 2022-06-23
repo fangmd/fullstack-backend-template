@@ -10,7 +10,8 @@ import { LoginAdminUserDto } from './dto/login-admin-user.dto';
 import MD5Utils from 'src/utils/md5';
 import { AuthService } from '../auth/auth.service';
 import { QueryAdminUserDto } from './dto/query-admin-user.dto';
-import { IDDto } from 'src/dto/id-dto';
+import { AdminPermissionService } from '../admin-permission/admin-permission.service';
+import { AdminPermission } from '@prisma/client';
 
 @Injectable()
 export class AdminUserService {
@@ -18,6 +19,7 @@ export class AdminUserService {
     private prisma: PrismaService,
     private authService: AuthService,
     private adminRoleService: AdminRoleService,
+    private adminPermissionService: AdminPermissionService,
   ) {}
 
   /**
@@ -155,13 +157,36 @@ export class AdminUserService {
   }
 
   /**
-   * 获取用户权限
+   * 获取用户所有权限
    */
-  async getUserPermissions(idDto: IDDto) {
-    const user = await this.findOne(idDto.id);
+  async getUserPermissions(id: string) {
+    const user = await this.findOne(BigInt(id));
 
     const adminRole = await this.adminRoleService.findOne(user.roleId);
+    if (!adminRole.permissionIds) {
+      return [];
+    }
+    const allPermissions = await this.adminPermissionService.findAll();
+    const myPermissions = this.filterPermissions(
+      allPermissions.list,
+      JSON.parse(adminRole.permissionIds),
+    );
 
-    return adminRole;
+    return myPermissions;
+  }
+
+  /**
+   * 获取有权限的节点和有子权限的节点
+   * 由于 Tree 组件的特点，只有部分子权限有权限的时候父权限checked=false也就是没有权限的
+   */
+  filterPermissions(allPs: AdminPermission[], permissionIds: string[]) {
+    return allPs.filter((i) => {
+      if (i['children']) {
+        i['children'] = this.filterPermissions(i['children'], permissionIds);
+        return i['children'].length > 0; // 子权限>0的时候，默认认为拥有父权限
+      } else {
+        return permissionIds.includes(i.id.toString());
+      }
+    });
   }
 }

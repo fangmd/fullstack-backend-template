@@ -5,5 +5,6 @@ import { AdminPermissionService } from '../admin-permission/admin-permission.ser
 @Module({
   providers: [AdminPermissionService],
   controllers: [AdminPermissionController],
+  exports: [AdminPermissionService],
 })
 export class AdminPermissionModule {}

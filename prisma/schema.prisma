@@ -30,7 +30,7 @@ model AdminUser {
 model AdminRole {
   id            BigInt   @id
   name          String   @unique
-  permissionIds    String?  @db.VarChar(10000)
+  permissionIds String?  @db.VarChar(10000)
   isDel         Boolean  @default(false) @map(name: "is_del")
   createTime    DateTime @default(now()) @map(name: "create_time")
   updateTime    DateTime @updatedAt @map(name: "update_time")
